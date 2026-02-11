@@ -1,0 +1,134 @@
+# Aura Wellness Global Remote Work Policy 2024
+**Effective Date:** January 1, 2024
+**Document ID:** HR-POL-2024-001
+**Version:** 2.1
+**Approved By:** Executive Leadership Team & Human Resources Department
+
+---
+
+## 1. Purpose and Scope
+
+### 1.1 Purpose
+The implementation of this Remote Work Policy aims to establish clear, comprehensive, and equitable guidelines for remote work arrangements at Aura Wellness. This policy is designed to foster a culture of trust, flexibility, and productivity, acknowledging the evolving nature of the modern workplace. By allowing eligible employees to work from locations other than the company's physical offices, we intend to enhance work-life balance, reduce commuting stress, and attract top talent from diverse geographical locations. However, the integrity of our collaborative culture, data security, and operational efficiency must be maintained at all times.
+
+### 1.2 Scope
+This policy applies to all full-time, part-time, and contract employees of Aura Wellness, subject to the eligibility criteria outlined in Section 2. It covers hybrid work models, fully remote positions, and temporary remote work arrangements. This policy supersedes all previous communications regarding remote work.
+
+---
+
+## 2. Eligibility and Assessment
+
+### 2.1 Role Suitability
+Not all roles are suitable for remote work. Eligibility is determined based on the nature of the role's responsibilities.
+*   **Fully Eligible:** Roles that primarily involve digital output, independent research, coding, design, administrative tasks that can be performed via cloud systems, and roles where collaboration can successfully occur virtually (e.g., Software Engineering, Data Analysis, Digital Marketing, HR Administration).
+*   **Partially Eligible (Hybrid):** Roles requiring access to specific physical equipment, secure physical files, or intermittent in-person client interactions (e.g., some R&D roles, IT Hardware Support).
+*   **Ineligible:** Roles requiring physical presence to perform core duties (e.g., Facility Management, Reception, Physical Security, On-site Server Maintenance, Cafeteria Staff).
+
+### 2.2 Performance Criteria
+Eligibility is also contingent upon individual employee performance. Employees must demonstrate:
+*   Consistent ability to meet or exceed performance goals and deadlines.
+*   Strong self-discipline and time management skills without direct supervision.
+*   Effective communication skills in a virtual environment.
+*   No active disciplinary actions or performance improvement plans (PIPs) within the last 6 months.
+
+### 2.3 Probationary Period
+New employees are generally required to work from the office (or strictly adhere to a predefined hybrid schedule) for their first 3 months (probation period) to facilitate onboarding, training, and cultural integration. Exceptions may be made for roles explicitly hired as "Fully Remote" in the employment contract.
+
+---
+
+## 3. Core Hours and Availability
+
+### 3.1 Standard Core Hours
+To facilitate synchronous collaboration, team meetings, and rapid decision-making, all employees (regardless of time zone, unless otherwise specified in their contract) are expected to be available during the company's "Core Collaboration Hours".
+*   **Core Hours:** 10:00 AM to 3:00 PM (Reference Time Zone: The time zone of the employee's primary reporting team).
+*   During these hours, employees must be available for meetings, calls, and immediate response to Slack messages or emails.
+
+### 3.2 Flexibility
+Outside of Core Hours, employees calculate their remaining work hours to fulfill their contractual obligations (typically 8 hours per day). This flexibility allows for personal appointments, family commitments, or optimizing work during peak personal productivity times. For example, an employee might choose to work 7:00 AM - 3:00 PM or 10:00 AM - 6:00 PM.
+
+### 3.3 Overtime and Availability
+Remote work does not imply 24/7 availability. Employees are encouraged to "disconnect" after their scheduled work hours to prevent burnout. Managers should not expect responses to non-urgent communications outside of an employee's working hours. Overtime for non-exempt employees must be pre-approved by a manager in writing.
+
+---
+
+## 4. Equipment, Workspace, and Technology
+
+### 4.1 Company-Provided Equipment
+Aura Wellness is committed to ensuring remote employees have the necessary tools to perform their jobs effectively.
+*   **Laptop:** A high-performance company laptop (MacBook Pro or Dell XPS, depending on department standards) will be issued.
+*   **Peripherals:** A standard kit including a monitor, keyboard, mouse, and noise-canceling headset.
+*   **Security:** All devices will have company-mandated security software (VPN, Antivirus, MDM) pre-installed. Tampering with this software is strictly prohibited.
+
+### 4.2 Home Office Stipend
+To support the creation of an ergonomic and productive home work environment, Aura Wellness provides a one-time Home Office Stipend.
+*   **Amount:** $500 (USD) net.
+*   **Usage:** Can be used for an office chair, desk, additional monitor, lighting, or webcam.
+*   **Claim Process:** Employees must submit receipts via the Expensify system within 30 days of their remote work start date.
+
+### 4.3 Workspace Requirements
+Employees are responsible for establishing a workspace that is:
+*   **Private and Quiet:** Free from distractions and suitable for confidential calls.
+*   **Ergonomic:** Promoting physical health (proper chair height, desk setup).
+*   **Secure:** Preventing unauthorized access to company devices or physical documents.
+
+### 4.4 Internet Connectivity
+A reliable, high-speed internet connection is a prerequisite for remote work.
+*   **Minimum Speed:** 50 Mbps download / 10 Mbps upload.
+*   **Cost:** The company provides a monthly internet allowance of $50 (USD) to offset connection costs.
+*   **Reliability:** Frequent connectivity issues hindering work performance may result in the revocation of remote work privileges.
+
+---
+
+## 5. Communication and Collaboration Standards
+
+### 5.1 Communication Channels
+*   **Slack:** The primary tool for daily, asynchronous communication, quick questions, and team updates. Use public channels for transparency whenever possible.
+*   **Zoom/Google Meet:** For synchronous meetings, brainstorming sessions, and 1:1s.
+*   **Email:** For formal communication, external partners, and documentation requiring a paper trail.
+*   **Jira/Asana:** For task tracking and project management. All work progress must be logged here visibly.
+
+### 5.2 Video Etiquette
+*   **Camera On:** We encourage cameras to be ON during team meetings, 1:1s, and workshops to foster connection and non-verbal communication.
+*   **Background:** Ensure your video background is professional or use a blurred/virtual background.
+*   **Audio:** Mute your microphone when not speaking to minimize background noise.
+
+### 5.3 Response Times
+*   **Slack:** Direct messages should generally be acknowledged within same business day, urgent tags within 2 hours during core time.
+*   **Email:** Within 24 hours (1 business day).
+*   **Calendar:** All employees must keep their Google Calendar up-to-date with working hours, OOO (Out of Office) blocks, and focus time.
+
+---
+
+## 6. Data Security and Confidentiality
+
+### 6.1 Network Security
+*   **VPN Usage:** Employees must connect to the corporate VPN (Virtual Private Network) when accessing internal servers, the intranet, or sensitive databases.
+*   **Public Wi-Fi:** Avoid using unsecured public Wi-Fi (cafes, airports) for accessing company data. If necessary, always use the company VPN.
+
+### 6.2 Device Security
+*   **Lock Screen:** Always lock your computer screen when stepping away from your desk, even at home.
+*   **Updates:** Install system updates and security patches as soon as prompted by the IT department.
+*   **No Sharing:** Company devices are for employee use only. Family members or friends are not permitted to use company laptops.
+
+### 6.3 Confidential Information
+Physical documents containing confidential information (PHI, PII, trade secrets) should ideally not be printed at home. If printed, they must be stored in a locked drawer and shredded when no longer needed. Digital data should not be saved to personal cloud storage accounts (e.g., personal Google Drive, Dropbox).
+
+---
+
+## 7. Health and Well-being
+
+### 7.1 Ergonomics
+Employees are encouraged to take regular breaks to stretch and rest their eyes. Aura Wellness offers virtual ergonomic assessments upon request to ensure your home setup does not cause strain or injury.
+
+### 7.2 Mental Health
+Working remotely can sometimes lead to isolation.
+*   **Social Interactions:** Participate in virtual "coffee chats," team trivia, and other online social events organized by the People Team.
+*   **Resources:** Remember that our Employee Assistance Program (EAP) is available 24/7 for counseling and support.
+
+---
+
+## 8. Revocation of Policy
+Remote work is a privilege, not a right. Aura Wellness reserves the right to revoke remote work agreements or modify this policy at any time based on business needs, team performance, or individual conduct. In such cases, employees will be given a minimum of 2 weeks' notice to make arrangements to return to the office, unless immediate termination is required due to gross misconduct.
+
+---
+*For any questions regarding this policy, please contact hr@aurawellness.com or join the #hr-questions channel on Slack.*

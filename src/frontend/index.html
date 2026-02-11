@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Wellness - Knowledge Assistant</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f3f4f6;
+            --surface: #ffffff;
+            --text: #111827;
+            --text-secondary: #6b7280;
+            --border: #e5e7eb;
+            --danger: #ef4444;
+            --chat-bg-user: #eff6ff;
+            --chat-bg-bot: #f9fafb;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Helper Utilities */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .p-4 { padding: 1rem; }
+        .font-bold { font-weight: 600; }
+        .text-sm { font-size: 0.875rem; }
+        .text-xs { font-size: 0.75rem; }
+
+        /* Header */
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        h1 { margin: 0; font-size: 1.25rem; color: var(--primary); }
+        
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover { color: var(--text); }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+        /* Main Config Bar */
+        .config-bar {
+            background: var(--surface);
+            padding: 0.75rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .config-input {
+            padding: 0.4rem 0.6rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.875rem;
+            width: 200px;
+        }
+        .config-label { font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.2rem; display: block;}
+
+        /* Content Area */
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        /* Chat Interface */
+        .chat-container {
+            background: var(--surface);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            height: calc(100vh - 200px);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border);
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .message {
+            max-width: 80%;
+            padding: 1rem;
+            border-radius: 8px;
+            line-height: 1.5;
+            position: relative;
+        }
+        .message.user {
+            background: var(--chat-bg-user);
+            align-self: flex-end;
+            border-bottom-right-radius: 0;
+            border: 1px solid #dbeafe;
+        }
+        .message.bot {
+            background: var(--chat-bg-bot);
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
+            border: 1px solid var(--border);
+        }
+        .message .source {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            padding-top: 0.5rem;
+            display: block;
+        }
+        .chat-input-area {
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 0.5rem;
+            background: #fafafa;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+        textarea {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            resize: none;
+            font-family: inherit;
+            outline: none;
+        }
+        textarea:focus { border-color: var(--primary); }
+        .primary-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .primary-btn:hover { background: var(--primary-hover); }
+        .delete-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        /* Admin Panels */
+        .card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+        .card h3 { margin-top: 0; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem;}
+        
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.4rem; font-weight: 500; font-size: 0.9rem; }
+        .form-control {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+        }
+
+        /* Status Toasts */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: slideIn 0.3s ease-out;
+            z-index: 1000;
+        }
+        .toast.success { background: #10b981; }
+        .toast.error { background: #ef4444; }
+
+        @keyframes slideIn {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="flex items-center gap-2">
+        <span>✨</span>
+        <h1>Aura Knowledge Assistant</h1>
+    </div>
+    <div class="flex gap-2">
+        <button class="tab-btn active" onclick="switchTab('chat')">💬 Chat</button>
+        <button class="tab-btn" onclick="switchTab('admin')">🛠️ Admin</button>
+    </div>
+</header>
+
+<div class="config-bar">
+    <div>
+        <label class="config-label">API Base URL</label>
+        <input type="text" id="apiBaseUrl" class="config-input" value="http://localhost:8000/api/v1">
+    </div>
+    <div>
+        <label class="config-label">Acting User ID (X-User-Id)</label>
+        <input type="text" id="userId" class="config-input" placeholder="User UUID">
+    </div>
+    <div>
+        <label class="config-label">Tenant ID (Global)</label>
+        <input type="text" id="tenantId" class="config-input" placeholder="Tenant UUID">
+    </div>
+    <div style="margin-left: auto;">
+        <button class="primary-btn" style="padding: 0.4rem 1rem; font-size: 0.8rem;" onclick="saveConfig()">Save Config</button>
+    </div>
+</div>
+
+<main id="chatTab">
+    <div class="chat-container">
+        <div style="padding: 1rem; border-bottom: 1px solid var(--border); background: #f8fafc;">
+            <div class="flex items-center gap-2">
+                <label class="text-sm font-bold">Active Project:</label>
+                <input type="text" id="chatProjectId" class="config-input" placeholder="Project UUID to query">
+            </div>
+        </div>
+        <div id="chatMessages" class="chat-messages">
+            <div class="message bot">
+                👋 Hello! I am your AI assistant. Connect to a project ID to start asking questions about your documents.
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <textarea id="questionInput" rows="2" placeholder="Ask a question about your documents... (Shift+Enter to send)"></textarea>
+            <button class="primary-btn" onclick="sendChat()">Send</button>
+        </div>
+    </div>
+</main>
+
+<main id="adminTab" class="hidden">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        
+        <!-- Create Project -->
+        <div class="card">
+            <h3>📂 Create New Project</h3>
+            <div class="form-group">
+                <label>Project Name</label>
+                <input type="text" id="newProjectName" class="form-control" placeholder="e.g. HR Policies">
+            </div>
+            <div class="form-group">
+                <label>Department</label>
+                <input type="text" id="newProjectDept" class="form-control" placeholder="e.g. HR">
+            </div>
+            <button class="primary-btn" onclick="createProject()">Create Project</button>
+            <div id="createProjectOutput" class="mt-4 text-sm text-secondary"></div>
+        </div>
+
+        <!-- Upload Doc -->
+        <div class="card">
+            <h3>📄 Upload Document</h3>
+            <div class="form-group">
+                <label>Target Project ID</label>
+                <input type="text" id="uploadProjectId" class="form-control" placeholder="Project UUID">
+            </div>
+            <div class="form-group">
+                <label>Document Title</label>
+                <input type="text" id="docTitle" class="form-control" placeholder="e.g. WFH Policy.pdf">
+            </div>
+            <div class="form-group">
+                <label>Content</label>
+                <textarea id="docContent" rows="5" class="form-control" placeholder="Paste text content here..."></textarea>
+            </div>
+            <div class="flex items-center justify-between">
+                <button class="primary-btn" onclick="uploadDocument()">Upload Document</button>
+                <label class="text-xs text-secondary cursor-pointer">
+                    <input type="file" id="fileInput" onchange="loadFile(this)" style="display:none;">
+                    📂 Load from .txt file
+                </label>
+            </div>
+        </div>
+
+        <!-- Delete Doc -->
+        <div class="card">
+            <h3>🗑️ Delete Document</h3>
+            <div class="form-group">
+                <label>Target Project ID</label>
+                <input type="text" id="delProjectId" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Document ID</label>
+                <input type="text" id="delDocId" class="form-control">
+            </div>
+            <button class="delete-btn" onclick="deleteDocument()">Delete Document</button>
+        </div>
+    </div>
+</main>
+
+<script>
+    // --- State & Config ---
+    const CONFIG_KEYS = ['apiBaseUrl', 'userId', 'tenantId', 'chatProjectId', 'uploadProjectId', 'delProjectId'];
+
+    // Load Config on Startup
+    window.onload = () => {
+        CONFIG_KEYS.forEach(key => {
+            const val = localStorage.getItem(key);
+            if(val) document.getElementById(key).value = val;
+        });
+        
+        // Auto-save on change
+        CONFIG_KEYS.forEach(key => {
+            document.getElementById(key).addEventListener('change', (e) => {
+                localStorage.setItem(key, e.target.value);
+            });
+        });
+
+        // Enter key for chat
+        document.getElementById('questionInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendChat();
+            }
+        });
+    };
+
+    function saveConfig() {
+        CONFIG_KEYS.forEach(key => {
+            localStorage.setItem(key, document.getElementById(key).value);
+        });
+        showToast('Configuration saved!', 'success');
+    }
+
+    function getHeaders() {
+        const userId = document.getElementById('userId').value;
+        const headers = { 'Content-Type': 'application/json' };
+        if(userId) headers['X-User-Id'] = userId;
+        return headers;
+    }
+
+    function showToast(msg, type='success') {
+        const div = document.createElement('div');
+        div.className = `toast ${type}`;
+        div.innerText = msg;
+        document.body.appendChild(div);
+        setTimeout(() => div.remove(), 3000);
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('main').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(tab + 'Tab').classList.remove('hidden');
+        event.target.classList.add('active');
+    }
+
+    // --- Actions ---
+
+    async function sendChat() {
+        const input = document.getElementById('questionInput');
+        const question = input.value.trim();
+        const projectId = document.getElementById('chatProjectId').value;
+        const baseUrl = document.getElementById('apiBaseUrl').value;
+        const userId = document.getElementById('userId').value;
+
+        if (!question) return;
+        if (!projectId) { showToast('Please enter a Project ID', 'error'); return; }
+        if (!userId) { showToast('Please enter a User ID', 'error'); return; }
+
+        // Add User Message
+        addMessage(question, 'user');
+        input.value = '';
+
+        // Add Loading
+        const loadingId = addMessage('Thinking...', 'bot');
+
+        try {
+            const res = await fetch(`${baseUrl}/rag/chat`, {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({
+                    question: question,
+                    user_id: userId,
+                    project_id: projectId
+                })
+            });
+            const data = await res.json();
+
+            // Remove loading
+            const loadingEl = document.getElementById(loadingId);
+            if (loadingEl) loadingEl.remove();
+
+            if (!res.ok) throw new Error(data.detail || 'Error');
+
+            // Format Answer with Sources
+            let content = data.answer;
+            if (data.sources && data.sources.length > 0) {
+                content += '<div class="mt-2" style="border-top:1px solid #ddd; padding-top:0.5rem;"><strong>Sources:</strong>';
+                data.sources.forEach(s => {
+                    content += `<span class="source">📄 ${s.title}</span>`;
+                });
+                content += '</div>';
+            }
+            addMessage(content, 'bot', true);
+
+        } catch (err) {
+            const loadingEl = document.getElementById(loadingId);
+            if (loadingEl) {
+                loadingEl.innerText = `Error: ${err.message}`;
+                loadingEl.style.color = 'red';
+            } else {
+                addMessage(`Error: ${err.message}`, 'bot');
+            }
+        }
+    }
+
+    function addMessage(text, sender, isHtml=false) {
+        const div = document.createElement('div');
+        div.className = `message ${sender}`;
+        div.id = 'msg-' + Date.now();
+        if(isHtml) div.innerHTML = text;
+        else div.innerText = text;
+        
+        const container = document.getElementById('chatMessages');
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+        return div.id;
+    }
+
+    async function createProject() {
+        const baseUrl = document.getElementById('apiBaseUrl').value;
+        const tenantId = document.getElementById('tenantId').value;
+        
+        try {
+            const res = await fetch(`${baseUrl}/admin/projects`, {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({
+                    tenant_id: tenantId,
+                    name: document.getElementById('newProjectName').value,
+                    department: document.getElementById('newProjectDept').value || null
+                })
+            });
+            const data = await res.json();
+            if(!res.ok) throw new Error(data.detail || 'Error');
+            
+            showToast(`Project Created! ID: ${data.id}`, 'success');
+            document.getElementById('createProjectOutput').innerHTML = `Created: <strong>${data.name}</strong><br>ID: <input value="${data.id}" readonly style="width:100%">`;
+            // Auto fill other inputs
+            document.getElementById('chatProjectId').value = data.id;
+            document.getElementById('uploadProjectId').value = data.id;
+            saveConfig();
+
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    }
+
+    async function uploadDocument() {
+        const baseUrl = document.getElementById('apiBaseUrl').value;
+        const projectId = document.getElementById('uploadProjectId').value;
+        
+        try {
+            const res = await fetch(`${baseUrl}/rag/projects/${projectId}/documents`, {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({
+                    title: document.getElementById('docTitle').value,
+                    content: document.getElementById('docContent').value
+                })
+            });
+            const data = await res.json();
+            if(!res.ok) throw new Error(data.detail || 'Error');
+            
+            showToast(`Document Uploaded! ID: ${data.id}`, 'success');
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    }
+
+    async function deleteDocument() {
+        const baseUrl = document.getElementById('apiBaseUrl').value;
+        const projectId = document.getElementById('delProjectId').value;
+        const docId = document.getElementById('delDocId').value;
+        
+        if(!confirm('Are you sure you want to delete this document?')) return;
+
+        try {
+            const res = await fetch(`${baseUrl}/rag/projects/${projectId}/documents/${docId}`, {
+                method: 'DELETE',
+                headers: getHeaders()
+            });
+            const data = await res.json();
+            if(!res.ok) throw new Error(data.detail || 'Error');
+            
+            showToast('Document Deleted!', 'success');
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    }
+
+    function loadFile(input) {
+        const file = input.files[0];
+        if(!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            document.getElementById('docContent').value = e.target.result;
+            // Try to set title from filename if empty
+            const titleInput = document.getElementById('docTitle');
+            if(!titleInput.value) titleInput.value = file.name;
+        };
+        reader.readAsText(file);
+    }
+</script>
+
+</body>
+</html>
