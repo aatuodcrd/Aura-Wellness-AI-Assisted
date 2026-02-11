@@ -48,3 +48,60 @@ Automated metrics (like BLEU/ROUGE) were insufficient for this system because:
 1.  **Accuracy vs. Hallucination:** A high similarity score could still be factually wrong if the model "filled in the blanks" with outside knowledge. Human review was needed to verify that the *source* of the answer was strictly the provided text.
 2.  **Tone & Formatting:** We needed the answer to be professional and structured. Only a human reviewer could assess if the "Citation Format" `[Source Title]` was being applied consistently across different document types (PDFs vs. Slack logs).
 3.  **Refusal Logic:** Tuning the "I don't know" threshold is subjective. We needed humans to decide if a "Partial Answer" was better or worse than a "Refusal". We decided strict refusal was safer for Policy documents.
+
+---
+
+## 4. Accepted vs Rejected Outputs (Examples)
+
+### Accepted Output
+**Input Context:** "Acme allows remote work 2 days a week."  
+**User Question:** "How many WFH days are allowed?"
+
+```json
+{
+  "answer": "Acme allows remote work 2 days a week. [WFH Policy]",
+  "sources": ["WFH Policy"]
+}
+```
+
+**Why accepted:** Answer is fully grounded in provided context and cites the correct source.
+
+### Rejected Output
+**Input Context:** "Acme allows remote work 2 days a week."  
+**User Question:** "What is Acme's parental leave policy?"
+
+```json
+{
+  "answer": "Acme offers 12 weeks of paid parental leave. [HR Handbook]",
+  "sources": ["HR Handbook"]
+}
+```
+
+**Why rejected:** The answer fabricates policy content and cites a source that is not present in context. This violates the "context‑only" requirement.
+
+---
+
+## 5. Real Run Output (From e2e.sh)
+
+### Upload Document Response
+```json
+{
+  "title": "WFH Policy",
+  "content": "Test tenant allows remote work 1 day a week.",
+  "id": "850863cb-b72c-4e7d-9353-b340786dedb4",
+  "project_id": "7f2e7932-d66e-462e-aa54-8b181b5fbe6a"
+}
+```
+
+### Chat Response
+```json
+{
+  "answer": "The policy allows for remote work 1 day a week [WFH Policy].",
+  "sources": [
+    {
+      "title": "WFH Policy",
+      "content": "Test tenant allows remote work 1 day a week...."
+    }
+  ]
+}
+```

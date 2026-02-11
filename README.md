@@ -47,6 +47,146 @@ graph TD
 
 ---
 
+## 📐 System Architecture (A2)
+
+High‑level components:
+
+*   **API layer:** FastAPI (`src/backend/app/main.py`) exposes `/api/v1/admin/*` and `/api/v1/rag/*`.
+*   **Prompt layer:** `ChatPromptTemplate` in `src/backend/app/api/v1/endpoints/rag.py`.
+*   **LLM usage:** `ChatOpenAI` (answers) + `OpenAIEmbeddings` (vectorization).
+*   **PostgreSQL:** source‑of‑record for tenants, users, projects, documents, chat logs.
+*   **Vector DB (Qdrant):** per‑tenant + per‑project collections for semantic search.
+*   **Redis:** caching retrieval results by `(tenant, project, query)` to control cost.
+
+---
+
+## 🔄 Flow & Conditions (Detailed)
+
+Core flow (happy path):
+
+1. **Create tenant** via `/admin/tenants`.
+2. **Create admin user** via `/admin/users` (first admin can be created without `X-User-Id`).
+3. **Create project** via `/admin/projects` (requires admin or manager in same tenant).
+4. **Upload document** via `/rag/projects/{project_id}/documents` (admin/manager only).
+5. **RAG ingestion** runs in background: chunk → embed → upsert to Qdrant.
+6. **Chat** via `/rag/chat`: retrieve top‑K chunks → prompt → LLM → log chat.
+
+Access conditions (enforced by API):
+
+*   **Tenant isolation:** `current_user.tenant_id` must match `project.tenant_id`.
+*   **Role — Admin:** can create projects/users and manage any project in tenant.
+*   **Role — Manager:** can create/manage projects only in their department.
+*   **Role — Employee:** read‑only chat within their department.
+*   **Chat request:** `user_id` in body must match `X-User-Id` header.
+
+Mermaid flow diagram:
+
+```mermaid
+flowchart TD
+  A[Client] --> B[POST /admin/tenants]
+  B --> C[POST /admin/users]
+  C --> D[POST /admin/projects]
+  D --> E["POST /rag/projects/{project_id}/documents"]
+  E --> F[Background ingest]
+  F --> G[Qdrant upsert]
+  A --> H["POST /rag/chat"]
+  H --> I{Auth header + user match}
+  I -->|ok| T{Tenant match}
+  T -->|ok| R{Role + department}
+  R -->|ok| J[Retrieve top-K from Qdrant]
+  I -->|fail| N[401]
+  T -->|fail| O[403]
+  R -->|fail| O
+  J --> K[Build prompt]
+  K --> L[LLM answer]
+  L --> M[Store chat log]
+
+```
+
+Mermaid role permissions (human‑readable):
+
+```mermaid
+flowchart TB
+  A[Admin] --> A1[Create users]
+  A --> A2[Create projects]
+  A --> A3[Upload documents]
+  A --> A4[Chat in any tenant project]
+
+  M[Manager] --> M1["Create projects - same dept"]
+  M --> M2["Upload documents - same dept"]
+  M --> M3["Chat - same dept"]
+
+  E[Employee] --> E1["Chat only - same dept"]
+```
+
+---
+
+## 🧱 Data Model (A3)
+
+Minimal schemas (Postgres):
+
+*   **Tenant:** `id`, `name`, `created_at`
+*   **User:** `id`, `tenant_id`, `email`, `role`, `department`, `created_at`
+*   **Project:** `id`, `tenant_id`, `name`, `department`, `created_at`
+*   **Document:** `id`, `project_id`, `title`, `content`, `created_at`
+*   **AI Request / Result (ChatLog):** `user_id`, `project_id`, `question`, `answer`, `sources`, `created_at`
+
+Tenant enforcement:
+
+*   **DB:** `tenant_id` is a foreign key on users/projects; projects own documents.
+*   **API:** endpoints validate `current_user.tenant_id == project.tenant_id` before read/write.
+*   **Vector DB:** collections are namespaced per tenant + project; query uses the same namespace.
+
+---
+
+## 🧪 Prompt Design (A4)
+
+**System prompt (excerpt):** see `AI_PROMPTS.md` for the exact prompt used.  
+**User prompt:** `{question}` from the API body.  
+**Output format:** structured JSON for stable downstream parsing.
+
+Example JSON format (expected by design):
+
+```json
+{
+  "answer": "Acme allows remote work 2 days a week. [WFH Policy]",
+  "sources": ["WFH Policy"]
+}
+```
+
+Why this structure:
+
+*   **JSON stability:** consistent keys for UI or downstream tools.
+*   **Citations:** `sources` enforces explicit attribution.
+*   **Safety:** allows strict refusal with `answer` and empty `sources`.
+
+---
+
+## 🧩 RAG Design (B1)
+
+*   **Chunking:** `RecursiveCharacterTextSplitter` with `CHUNK_SIZE=1000`, `CHUNK_OVERLAP=200`.
+*   **Embeddings:** `text-embedding-3-small`.
+*   **Storage:** Qdrant collections per tenant+project; payload includes `doc_id`, `title`, `content`, `chunk_index`.
+*   **Retrieval:** vector search scoped by tenant+project; top‑K results used as context.
+
+---
+
+## 💰 Cost Control Strategy (C1)
+
+*   **Token limits:** chunking + top‑K retrieval bounds context size.
+*   **Cache:** Redis caches retrieval results per `(tenant, project, query)` for 1 hour.
+*   **Skip LLM when empty:** if no context is retrieved, return “I don’t know” without calling the LLM.
+
+---
+
+## 🧱 Tenant Isolation Strategy (D1)
+
+*   **Prompt:** only injects context retrieved from a tenant‑scoped collection.
+*   **Vector search:** collection naming uses `{tenant_id}/{project_id}` to prevent cross‑tenant hits.
+*   **API checks:** tenant mismatch returns 403 before retrieval.
+
+---
+
 ## 📂 Project Structure
 
 ```bash
@@ -139,6 +279,21 @@ curl -s -X POST "$BASE_URL/rag/chat" \
   -H "Content-Type: application/json" \
   -H "X-User-Id: $ADMIN_ID" \
   -d "{\"user_id\":\"$ADMIN_ID\",\"project_id\":\"$PROJECT_ID\",\"question\":\"How many WFH days are allowed?\"}"
+```
+
+### Full system test run (end‑to‑end)
+```bash
+# 1) Start services
+docker compose up --build -d
+
+# 2) Confirm health
+curl -s http://localhost:8000/health
+
+# 3) Seed sample data (optional)
+docker-compose exec backend python seed.py
+
+# 4) Run end-to-end test script (creates tenant/user/project, uploads doc, asks question)
+bash scripts/e2e.sh
 ```
 
 ---
